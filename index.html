@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Says · Memory Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="simon-panel">
+            <!-- Game Board -->
+            <div class="board">
+                <button class="color-btn" id="green" data-color="green"></button>
+                <button class="color-btn" id="red" data-color="red"></button>
+                <button class="color-btn" id="yellow" data-color="yellow"></button>
+                <button class="color-btn" id="blue" data-color="blue"></button>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <div class="info-box">
+                    <span>🎯 Level</span>
+                    <span class="value" id="levelDisplay">0</span>
+                </div>
+                <div class="btn-group">
+                    <button class="ctrl-btn" id="startBtn">▶ Start</button>
+                    <button class="ctrl-btn" id="resetBtn">⟲ Reset</button>
+                </div>
+            </div>
+
+            <!-- Status Message -->
+            <div class="status-msg" id="statusMsg">▶ Press Start</div>
+            <div class="footer">Simon Says · Memory Challenge</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
