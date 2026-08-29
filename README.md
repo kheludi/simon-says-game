@@ -27,6 +27,7 @@ A classic Simon Says memory game built with HTML, CSS, and vanilla JavaScript. T
 
 ## 📁 Project Structure
 simon-says-game/
+
 ├── index.html # Main HTML file
 ├── style.css # All styling
 ├── script.js # Game logic and audio
