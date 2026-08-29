@@ -20,6 +20,117 @@
     };
     const colorOrder = ['green', 'red', 'yellow', 'blue'];
 
+    // ----- Sound system -----
+    // Create audio context (for web audio API)
+    let audioCtx = null;
+    
+    function getAudioContext() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return audioCtx;
+    }
+
+    // Generate simple tones for each color
+    function playSound(color, duration = 300) {
+        try {
+            const ctx = getAudioContext();
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            // Different frequencies for each color (like Simon Says original)
+            const frequencies = {
+                green: 523.25,   // C5
+                red: 659.25,     // E5
+                yellow: 783.99,  // G5
+                blue: 1046.50    // C6
+            };
+            
+            oscillator.frequency.value = frequencies[color] || 440;
+            oscillator.type = 'sine';
+            
+            // Volume envelope (fade out for clean sound)
+            gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration / 1000);
+            
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + duration / 1000);
+        } catch (error) {
+            // Silently fail if audio is not supported
+            console.log('Audio not supported or not initialized');
+        }
+    }
+
+    // Alternative: Use oscillator with more "retro" feel
+    function playRetroSound(color, duration = 200) {
+        try {
+            const ctx = getAudioContext();
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            const frequencies = {
+                green: 500,
+                red: 600,
+                yellow: 700,
+                blue: 800
+            };
+            
+            oscillator.frequency.value = frequencies[color] || 440;
+            oscillator.type = 'square'; // More retro sound
+            
+            gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration / 1000);
+            
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + duration / 1000);
+        } catch (error) {
+            // Silently fail
+        }
+    }
+
+    // Use this for a more modern/clean sound
+    function playModernSound(color, duration = 250) {
+        try {
+            const ctx = getAudioContext();
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            // Different notes (C, E, G, C)
+            const frequencies = {
+                green: 523.25,   // C5
+                red: 659.25,     // E5
+                yellow: 783.99,  // G5
+                blue: 1046.50    // C6
+            };
+            
+            oscillator.frequency.value = frequencies[color] || 440;
+            oscillator.type = 'sine';
+            
+            // Softer volume with fade
+            gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration / 1000);
+            
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + duration / 1000);
+        } catch (error) {
+            // Silently fail
+        }
+    }
+
+    // I can choose the sound style I want (uncomment one):
+    const playColorSound = playModernSound; // Modern/clean
+    // const playColorSound = playRetroSound; // Retro/square wave
+    // const playColorSound = playSound; // Simple sine
+
     // ----- Game state -----
     let sequence = [];
     let playerIndex = 0;
@@ -65,6 +176,10 @@
         return new Promise((resolve) => {
             const btn = colorMap[color];
             if (!btn) return resolve();
+            
+            // Play sound when lighting up
+            playColorSound(color, duration);
+            
             btn.classList.add('lit');
             setTimeout(() => {
                 btn.classList.remove('lit');
@@ -76,6 +191,22 @@
     function flashError() {
         const btns = document.querySelectorAll('.color-btn');
         btns.forEach(b => b.classList.add('lit'));
+        
+        // Play error sound (low buzz)
+        try {
+            const ctx = getAudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 200;
+            osc.type = 'sawtooth';
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+        } catch(e) {}
+        
         setTimeout(() => {
             btns.forEach(b => b.classList.remove('lit'));
         }, 300);
@@ -140,6 +271,9 @@
     // ----- Handle player click -----
     function handlePlayerClick(color) {
         if (!isPlayerTurn || gameOver || lockButtons || isPlaying) return;
+
+        // Play sound when player clicks
+        playColorSound(color, 200);
 
         const expectedColor = sequence[playerIndex];
 
